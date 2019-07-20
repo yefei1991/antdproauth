@@ -90,6 +90,34 @@ export default {
   // umi routes: https://umijs.org/zh/guide/router.html
   routes: [
     {
+      path: '/user',
+      component: '../layouts/UserLayout',
+      routes: [
+        {
+          path: '/user',
+          redirect: '/user/login',
+        },
+        {
+          name: 'login',
+          path: '/user/login',
+          component: './user/login',
+        },
+        {
+          name: 'register-result',
+          path: '/user/register-result',
+          component: './user/register-result',
+        },
+        {
+          name: 'register',
+          path: '/user/register',
+          component: './user/register',
+        },
+        {
+          component: '404',
+        },
+      ],
+    },
+    {
       path: '/',
       component: '../layouts/BasicLayout',
       Routes: ['src/pages/Authorized'],
@@ -100,6 +128,54 @@ export default {
           name: 'welcome',
           icon: 'smile',
           component: './Welcome',
+        },
+        {
+          path: '/list',
+          icon: 'table',
+          name: 'list',
+          routes: [
+            {
+              path: '/list/search',
+              name: 'search-list',
+              component: './list/search',
+              routes: [
+                {
+                  path: '/list/search',
+                  redirect: '/list/search/articles',
+                },
+                {
+                  name: 'articles',
+                  path: '/list/search/articles',
+                  component: './list/search/articles',
+                },
+                {
+                  name: 'projects',
+                  path: '/list/search/projects',
+                  component: './list/search/projects',
+                },
+                {
+                  name: 'applications',
+                  path: '/list/search/applications',
+                  component: './list/search/applications',
+                },
+              ],
+            },
+            {
+              name: 'table-list',
+              path: '/list/table-list',
+              component: './list/table-list',
+            },
+            {
+              name: 'basic-list',
+              path: '/list/basic-list',
+              component: './list/basic-list',
+            },
+            {
+              name: 'card-list',
+              path: '/list/card-list',
+              component: './list/card-list',
+            },
+          ],
         },
         {
           component: './404',
