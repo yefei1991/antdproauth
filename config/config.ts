@@ -103,16 +103,6 @@ export default {
           component: './user/login',
         },
         {
-          name: 'register-result',
-          path: '/user/register-result',
-          component: './user/register-result',
-        },
-        {
-          name: 'register',
-          path: '/user/register',
-          component: './user/register',
-        },
-        {
           component: '404',
         },
       ],
