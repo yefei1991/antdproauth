@@ -1,4 +1,4 @@
-import { AuthorityType } from '../pages/user/login/model';
+import { AuthorityType } from '../models/login';
 
 // use localStorage to store the authority info, which might be sent from server in actual project.
 export function getAuthority(): AuthorityType | null {
