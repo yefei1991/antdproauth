@@ -18,10 +18,12 @@ import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectProps, ConnectState } from '@/models/connect';
 import { isAntDesignPro } from '@/utils/utils';
 import logo from '../assets/logo.svg';
-import {Menu,AuthorityType} from '../pages/user/login/model'
-import {getAuthority} from '../utils/authority'
+import { Menu, AuthorityType } from '../pages/user/login/model';
+import { getAuthority } from '../utils/authority';
 
-export interface BasicLayoutProps extends ProLayoutProps, Omit<ConnectProps, 'location'|'computedMatch'|'route'> {
+export interface BasicLayoutProps
+  extends ProLayoutProps,
+    Omit<ConnectProps, 'location' | 'computedMatch' | 'route'> {
   breadcrumbNameMap: {
     [path: string]: MenuDataItem;
   };
@@ -73,11 +75,11 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   }, []);
 
   /**
- * use Authorized check all menu item
- */
-  const menuDataRender = (menuList: MenuDataItem[]): Menu[] =>{
-    const info=getAuthority() as AuthorityType
-    return info.currentMenu
+   * use Authorized check all menu item
+   */
+  const menuDataRender = (menuList: MenuDataItem[]): Menu[] => {
+    const info = getAuthority() as AuthorityType;
+    return info.currentMenu;
   };
 
   /**

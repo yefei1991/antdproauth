@@ -1,11 +1,11 @@
 import { getAuthority } from './authority';
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable import/no-mutable-exports */
-let Authorized = getAuthority()
+let Authorized = getAuthority();
 
 // Reload the rights component
 const reloadAuthorized = (): void => {
-  Authorized = getAuthority()
+  Authorized = getAuthority();
 };
 
 export { reloadAuthorized };

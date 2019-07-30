@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 import { Form, Icon, Input, Button, Alert } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
@@ -28,19 +28,18 @@ interface LoginProps extends FormComponentProps {
     submitting: loading.effects['userLogin/login'],
   }),
 )
-class Login extends Component<LoginProps, any>{
-
+class Login extends Component<LoginProps, any> {
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const {dispatch}=this.props
+        const { dispatch } = this.props;
         dispatch({
           type: 'userLogin/login',
-          payload:{
-            ...values
-          }
-        })
+          payload: {
+            ...values,
+          },
+        });
       }
     });
   };
@@ -50,20 +49,21 @@ class Login extends Component<LoginProps, any>{
   );
 
   render() {
-    const { getFieldDecorator } = this.props.form
-    const {submitting,userLogin:{status}}=this.props
+    const { getFieldDecorator } = this.props.form;
+    const {
+      submitting,
+      userLogin: { status },
+    } = this.props;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
-        {status === 'error' &&
-              !submitting &&
-              this.renderMessage('用户名或密码错误')}
+        {status === 'error' && !submitting && this.renderMessage('用户名或密码错误')}
         <Form.Item>
           {getFieldDecorator('username', {
             rules: [{ required: true, message: '请输入用户名!' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder='请输入用户名!'
+              placeholder="请输入用户名!"
             />,
           )}
         </Form.Item>
@@ -74,18 +74,24 @@ class Login extends Component<LoginProps, any>{
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
               type="password"
-              placeholder='请输入密码!'
+              placeholder="请输入密码!"
             />,
           )}
         </Form.Item>
         <Form.Item>
-          <Button loading={submitting} type="primary" htmlType="submit" block className="login-form-button">
+          <Button
+            loading={submitting}
+            type="primary"
+            htmlType="submit"
+            block
+            className="login-form-button"
+          >
             登录
           </Button>
         </Form.Item>
       </Form>
-    )
-  };
+    );
+  }
 }
 
 export default Form.create()(Login);
