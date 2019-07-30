@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Form, Icon, Input, Button, Alert } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { connect } from 'dva';
-import { StateType } from './model';
+import { StateType } from '../../../models/login';
 import { Dispatch } from 'redux';
 
 interface LoginProps extends FormComponentProps {

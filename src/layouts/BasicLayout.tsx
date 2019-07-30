@@ -18,7 +18,7 @@ import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectProps, ConnectState } from '@/models/connect';
 import { isAntDesignPro } from '@/utils/utils';
 import logo from '../assets/logo.svg';
-import { Menu, AuthorityType } from '../pages/user/login/model';
+import { Menu, AuthorityType } from '../models/login';
 import { getAuthority } from '../utils/authority';
 
 export interface BasicLayoutProps
@@ -65,11 +65,18 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   /**
    * constructor
    */
+  
+  const info = getAuthority() as AuthorityType;
+  
 
   useEffect(() => {
     if (dispatch) {
       dispatch({
         type: 'settings/getSetting',
+      });
+      dispatch({
+        type: 'userLogin/changeLoginStatus',
+        payload:info,
       });
     }
   }, []);
@@ -77,8 +84,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   /**
    * use Authorized check all menu item
    */
+
   const menuDataRender = (menuList: MenuDataItem[]): Menu[] => {
-    const info = getAuthority() as AuthorityType;
     return info.currentMenu;
   };
 
@@ -121,7 +128,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   );
 };
 
-export default connect(({ global, settings }: ConnectState) => ({
+export default connect(({ global, settings}: ConnectState) => ({
   collapsed: global.collapsed,
   settings,
 }))(BasicLayout);

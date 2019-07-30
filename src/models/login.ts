@@ -1,61 +1,69 @@
 import { AnyAction, Reducer } from 'redux';
-import { parse, stringify } from 'qs';
-
 import { EffectsCommandMap } from 'dva';
+import { fakeAccountLogin } from '../pages/user/login/service';
 import { routerRedux } from 'dva/router';
 
-export function getPageQuery(): {
-  [key: string]: string;
-} {
-  return parse(window.location.href.split('?')[1]);
+export interface Menu {
+  path: string;
+  name: string;
+  icon?: string;
+  exact?: boolean;
+  children: Menu[];
 }
 
-export type Effect = (
+export interface User {
+  id: number;
+  name: string;
+}
+
+export interface AuthorityType extends StateType {
+  currentUser: User;
+  currentMenu: Menu[];
+}
+
+export interface StateType {
+  status?: 'ok' | 'error';
+}
+
+type Effect = (
   action: AnyAction,
-  effects: EffectsCommandMap & { select: <T>(func: (state: {}) => T) => T },
+  effects: EffectsCommandMap & { select: <T>(func: (state: StateType) => T) => T },
 ) => void;
 
 export interface ModelType {
   namespace: string;
-  state: {};
+  state: StateType;
   effects: {
-    logout: Effect;
+    login: Effect;
   };
   reducers: {
-    changeLoginStatus: Reducer<{}>;
+    changeLoginStatus: Reducer<StateType>;
   };
 }
 
 const Model: ModelType = {
-  namespace: 'login',
-
+  namespace: 'userLogin',
   state: {
     status: undefined,
   },
-
   effects: {
-    *logout(_, { put }) {
-      const { redirect } = getPageQuery();
-      // redirect
-      if (window.location.pathname !== '/user/login' && !redirect) {
-        yield put(
-          routerRedux.replace({
-            pathname: '/user/login',
-            search: stringify({
-              redirect: window.location.href,
-            }),
-          }),
-        );
+    *login({ payload }, { call, put }) {
+      const response: StateType = yield call(fakeAccountLogin, payload);
+      yield put({
+        type: 'changeLoginStatus',
+        payload: response,
+      });
+      if (response.status === 'ok') {
+        localStorage.setItem('authority', JSON.stringify(response));
+        yield put(routerRedux.push('/'));
       }
     },
   },
-
   reducers: {
     changeLoginStatus(state, { payload }) {
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        ...payload,
       };
     },
   },
