@@ -5,6 +5,7 @@ import { RouterTypes } from 'umi';
 import { GlobalModelState } from './global';
 import { DefaultSettings as SettingModelState } from '../../config/defaultSettings';
 import { UserModelState } from './user';
+import {StateType as LoginState} from '../pages/user/login/model'
 
 export { GlobalModelState, SettingModelState, UserModelState };
 
@@ -16,6 +17,7 @@ export interface Loading {
     menu?: boolean;
     setting?: boolean;
     user?: boolean;
+    userLogin?:boolean;
   };
 }
 
@@ -24,6 +26,7 @@ export interface ConnectState {
   loading: Loading;
   settings: SettingModelState;
   user: UserModelState;
+  userLogin:LoginState;
 }
 
 export type Effect = (

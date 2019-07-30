@@ -1,4 +1,6 @@
-export default {
+import { delay} from 'roadhog-api-doc';
+
+const proxy={
     'POST  /api/login/account': (
         req: { body: { password: any; username: any; } },
         res: {
@@ -15,6 +17,7 @@ export default {
                         "path": "/dashboard",
                         "name": "dashboard",
                         "icon": "dashboard",
+                        "exact": true,
                         "children": [
                             {
                                 "path": "/dashboard/analysis",
@@ -42,3 +45,5 @@ export default {
         });
     },
 }
+
+export default delay(proxy, 2000);

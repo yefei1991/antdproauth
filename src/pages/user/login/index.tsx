@@ -79,7 +79,7 @@ class Login extends Component<LoginProps, any>{
           )}
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" block className="login-form-button">
+          <Button loading={submitting} type="primary" htmlType="submit" block className="login-form-button">
             登录
           </Button>
         </Form.Item>

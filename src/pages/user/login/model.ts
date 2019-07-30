@@ -3,7 +3,7 @@ import { EffectsCommandMap } from 'dva';
 import { fakeAccountLogin } from './service'
 import { routerRedux } from 'dva/router';
 
-interface Menu {
+export interface Menu {
     path: string
     name: string
     icon?: string
@@ -11,10 +11,18 @@ interface Menu {
     children: Menu[]
 }
 
+export interface User{
+    id:number
+    name:string
+}
+
+export interface AuthorityType extends StateType{
+    currentUser:User
+    currentMenu:Menu[]
+}
+
 export interface StateType {
     status?: 'ok' | 'error'
-    currentUser?: { id: number, name: string }
-    currentMenu?: Menu[]
 }
 
 type Effect = (
@@ -41,13 +49,13 @@ const Model: ModelType = {
     effects: {
         *login({ payload }, { call, put }) {
             const response: StateType = yield call(fakeAccountLogin, payload)
-            console.info(response)
             yield put({
                 type: 'changeLoginStatus',
                 payload: response
             });
             if(response.status==='ok'){
-                yield put(routerRedux.replace('/'))
+                localStorage.setItem('authority',JSON.stringify(response))
+                yield put(routerRedux.push('/'))
             }
         }
     },
@@ -55,7 +63,7 @@ const Model: ModelType = {
         changeLoginStatus(state, { payload }) {
             return {
                 ...state,
-                ...payload,
+                status:payload.status
             };
         },
     },

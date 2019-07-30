@@ -14,11 +14,12 @@ import Link from 'umi/link';
 import { connect } from 'dva';
 import { formatMessage } from 'umi-plugin-react/locale';
 
-import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { ConnectProps, ConnectState } from '@/models/connect';
 import { isAntDesignPro } from '@/utils/utils';
 import logo from '../assets/logo.svg';
+import {Menu,AuthorityType} from '../pages/user/login/model'
+import {getAuthority} from '../utils/authority'
 
 export interface BasicLayoutProps extends ProLayoutProps, Omit<ConnectProps, 'location'|'computedMatch'|'route'> {
   breadcrumbNameMap: {
@@ -31,18 +32,6 @@ export type BasicLayoutContext = { [K in 'location']: BasicLayoutProps[K] } & {
     [path: string]: MenuDataItem;
   };
 };
-
-/**
- * use Authorized check all menu item
- */
-const menuDataRender = (menuList: MenuDataItem[]): MenuDataItem[] =>
-  menuList.map(item => {
-    const localItem = {
-      ...item,
-      children: item.children ? menuDataRender(item.children) : [],
-    };
-    return Authorized.check(item.authority, localItem, null) as MenuDataItem;
-  });
 
 const footerRender: BasicLayoutProps['footerRender'] = (_, defaultDom) => {
   if (!isAntDesignPro()) {
@@ -78,13 +67,18 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   useEffect(() => {
     if (dispatch) {
       dispatch({
-        type: 'user/fetchCurrent',
-      });
-      dispatch({
         type: 'settings/getSetting',
       });
     }
   }, []);
+
+  /**
+ * use Authorized check all menu item
+ */
+  const menuDataRender = (menuList: MenuDataItem[]): Menu[] =>{
+    const info=getAuthority() as AuthorityType
+    return info.currentMenu
+  };
 
   /**
    * init variables
