@@ -12,5 +12,10 @@ export function getAuthority(): AuthorityType | null {
 }
 
 export function setAuthority(authority: AuthorityType): void {
-  return localStorage.setItem('authority', JSON.stringify(authority));
+  localStorage.setItem('authority', JSON.stringify(authority));
+}
+
+
+export function removeAuthority():void{
+  localStorage.removeItem('authority')
 }

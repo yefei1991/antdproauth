@@ -1,6 +1,5 @@
 import { Avatar, Icon, Menu, Spin } from 'antd';
 import { ClickParam } from 'antd/es/menu';
-import { FormattedMessage } from 'umi-plugin-react/locale';
 import React from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -23,7 +22,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       const { dispatch } = this.props;
       if (dispatch) {
         dispatch({
-          type: 'login/logout',
+          type: 'userLogin/logout',
         });
       }
 
@@ -46,16 +45,12 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         <Menu.Item key="center">
           <Icon type="user" />
-          <FormattedMessage id="menu.account.center" defaultMessage="account center" />
-        </Menu.Item>
-        <Menu.Item key="settings">
-          <Icon type="setting" />
-          <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
+          个人中心
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
           <Icon type="logout" />
-          <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );
@@ -63,8 +58,7 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     return currentUser && currentUser.name ? (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={styles.name}>{currentUser.name}</span>
+          <span className={styles.name}>{currentUser.name},你好</span>
         </span>
       </HeaderDropdown>
     ) : (
@@ -72,6 +66,6 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     );
   }
 }
-export default connect(({ user }: ConnectState) => ({
-  currentUser: user.currentUser,
+export default connect(({ userLogin }: ConnectState) => ({
+  currentUser: userLogin.currentUser
 }))(AvatarDropdown);

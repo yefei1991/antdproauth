@@ -25,7 +25,6 @@ export interface ConnectState {
   global: GlobalModelState;
   loading: Loading;
   settings: SettingModelState;
-  user: UserModelState;
   userLogin: LoginState;
 }
 

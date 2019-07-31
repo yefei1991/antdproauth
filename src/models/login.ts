@@ -2,6 +2,7 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { fakeAccountLogin } from '../pages/user/login/service';
 import { routerRedux } from 'dva/router';
+import {setAuthority,removeAuthority} from '../utils/authority'
 
 export interface Menu {
   path: string;
@@ -23,6 +24,8 @@ export interface AuthorityType extends StateType {
 
 export interface StateType {
   status?: 'ok' | 'error';
+  currentUser?: User;
+  currentMenu?: Menu[];
 }
 
 type Effect = (
@@ -35,6 +38,7 @@ export interface ModelType {
   state: StateType;
   effects: {
     login: Effect;
+    logout:Effect;
   };
   reducers: {
     changeLoginStatus: Reducer<StateType>;
@@ -48,15 +52,23 @@ const Model: ModelType = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response: StateType = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
+      const response: AuthorityType = yield call(fakeAccountLogin, payload);
       if (response.status === 'ok') {
-        localStorage.setItem('authority', JSON.stringify(response));
+        setAuthority(response)
         yield put(routerRedux.push('/'));
       }
+    },
+    *logout(_, { put }) {
+      removeAuthority()
+      yield put({
+        type: 'changeLoginStatus',
+        payload: {},
+      });
+      yield put(
+        routerRedux.push({
+          pathname: '/user/login',
+        }),
+      );
     },
   },
   reducers: {
