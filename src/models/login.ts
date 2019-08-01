@@ -1,4 +1,5 @@
 import { AnyAction, Reducer } from 'redux';
+import { parse, stringify } from 'qs';
 import { EffectsCommandMap } from 'dva';
 import { fakeAccountLogin } from '../pages/user/login/service';
 import { routerRedux } from 'dva/router';
@@ -45,6 +46,12 @@ export interface ModelType {
   };
 }
 
+function getPageQuery(): {
+  [key: string]: string;
+} {
+  return parse(window.location.href.split('?')[1]);
+}
+
 const Model: ModelType = {
   namespace: 'userLogin',
   state: {
@@ -55,7 +62,14 @@ const Model: ModelType = {
       const response: AuthorityType = yield call(fakeAccountLogin, payload);
       if (response.status === 'ok') {
         setAuthority(response)
-        yield put(routerRedux.push('/'));
+        let {redirect}=getPageQuery()
+        if(redirect){
+          const redirectUrlParams = new URL(redirect);
+          redirect = redirect.substr(redirectUrlParams.origin.length);
+          yield put(routerRedux.push(redirect));
+        }else{
+          yield put(routerRedux.push('/'));
+        }
       }
     },
     *logout(_, { put }) {
@@ -67,6 +81,9 @@ const Model: ModelType = {
       yield put(
         routerRedux.push({
           pathname: '/user/login',
+          search: stringify({
+            redirect: window.location.href,
+          }),
         }),
       );
     },
