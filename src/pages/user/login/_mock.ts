@@ -1,5 +1,34 @@
 import { delay } from 'roadhog-api-doc';
 
+const authority={
+  status: 'ok',
+  currentUser: { id: 1, name: 'yefei' },
+  currentMenu: [
+    {
+      path: '/system',
+      name: '系统管理',
+      icon: 'dashboard',
+      exact: true,
+      children: [
+        {
+          path: '/system/user',
+          name: '用户管理',
+          exact: true,
+        },
+        {
+          path: '/system/role',
+          name: '角色管理',
+          exact: true,
+        },
+        {
+          path: '/system/resource',
+          name: '资源管理',
+          exact: true,
+        },
+      ],
+    },
+  ],
+}
 const proxy = {
   'POST  /api/login/account': (
     req: { body: { password: any; username: any } },
@@ -9,35 +38,7 @@ const proxy = {
   ) => {
     const { username, password } = req.body;
     if (password === 'yefei123' && username === 'yefei') {
-      res.send({
-        status: 'ok',
-        currentUser: { id: 1, name: 'yefei' },
-        currentMenu: [
-          {
-            path: '/dashboard',
-            name: 'dashboard',
-            icon: 'dashboard',
-            exact: true,
-            children: [
-              {
-                path: '/dashboard/analysis',
-                name: 'analysis',
-                exact: true,
-              },
-              {
-                path: '/dashboard/monitor',
-                name: 'monitor',
-                exact: true,
-              },
-              {
-                path: '/dashboard/workplace',
-                name: 'workplace',
-                exact: true,
-              },
-            ],
-          },
-        ],
-      });
+      res.send(authority);
       return;
     }
     res.send({
