@@ -120,6 +120,28 @@ export default {
           component: './Welcome',
         },
         {
+          path: '/system',
+          icon: 'table',
+          name: 'system',
+          routes: [
+            {
+              name: 'user',
+              path: '/system/user',
+              component: './system/user',
+            },
+            {
+              name: 'basic-list',
+              path: '/list/basic-list',
+              component: './list/basic-list',
+            },
+            {
+              name: 'card-list',
+              path: '/list/card-list',
+              component: './list/card-list',
+            },
+          ],
+        },
+        {
           path: '/list',
           icon: 'table',
           name: 'list',
