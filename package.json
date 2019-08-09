@@ -91,7 +91,6 @@
     "eslint": "^5.16.0",
     "fetch-blocks": "^1.0.0",
     "gh-pages": "^2.0.1",
-    "husky": "^2.3.0",
     "import-sort-cli": "^6.0.0",
     "import-sort-parser-babylon": "^6.0.0",
     "import-sort-parser-typescript": "^6.0.0",
