@@ -1,7 +1,8 @@
 import request from 'umi-request';
+import { ParamType } from './model';
 
-export async function queryUserList(params:any) {
-    return request('/api/user/list', {
-        params,
-    });
+export async function queryUserList(params: ParamType) {
+  return request('/api/user/list', {
+    params,
+  });
 }

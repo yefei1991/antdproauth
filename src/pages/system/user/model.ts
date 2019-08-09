@@ -3,15 +3,27 @@ import { EffectsCommandMap } from 'dva';
 import { queryUserList } from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 
-export interface User{
-  id:number
-  name:string
-  username:string
-  role:string
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  role: string;
+}
+
+export interface ParamType {
+  current?: number;
+  pageSize?: number;
+}
+
+export interface ResponseType {
+  total: number;
+  rows: any[];
+  current: number;
+  pageSize: number;
 }
 export interface StateType {
   list: User[];
-  pagination:PaginationProps
+  pagination: PaginationProps;
 }
 
 export type Effect = (
@@ -35,13 +47,12 @@ const Model: ModelType = {
 
   state: {
     list: [],
-    pagination:{current:1,pageSize:10},
+    pagination: { current: 1, pageSize: 10, showSizeChanger: true },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response:{total:number,rows:any[],current?:number} = yield call(queryUserList, payload);
-      response.current=payload.current
+      const response: ResponseType = yield call(queryUserList, payload);
       yield put({
         type: 'queryList',
         payload: response,
@@ -50,10 +61,15 @@ const Model: ModelType = {
   },
 
   reducers: {
-    queryList(state, {payload}) {
+    queryList(state, { payload }) {
+      const pl = <ResponseType>payload;
+      const { pagination } = state as StateType;
+      pagination.total = pl.total;
+      pagination.current = pl.current;
+      pagination.pageSize = pl.pageSize;
       return {
-        pagination:{total:payload.total,current:payload.current},
-        list: payload.rows
+        pagination,
+        list: pl.rows,
       };
     },
   },
