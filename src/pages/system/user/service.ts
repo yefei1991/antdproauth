@@ -6,3 +6,9 @@ export async function queryUserList(params: ParamType) {
     params,
   });
 }
+
+export async function queryUser(params: {id:number}) {
+  return request('/api/user/info', {
+    params,
+  });
+}

@@ -20,8 +20,13 @@ const getUserList = (req, res) => {
   const response: ResponseType = { total: users.length, rows, current, pageSize };
   res.json(response);
 };
+const getUserInfo=(req,res)=>{
+  const id:number=(req.query.id)*1
+  res.json(users[id])
+}
 const proxy = {
   'GET  /api/user/list': getUserList,
+  'GET  /api/user/info': getUserInfo,
 };
 
-export default delay(proxy, 2000);
+export default delay(proxy, 1000);

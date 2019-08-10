@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
@@ -13,6 +13,9 @@ interface UserManageProps extends FormComponentProps {
   dispatch: Dispatch<any>;
 }
 
+interface UserManageState{
+  modelVisible:boolean
+}
 @connect(
   ({
     userManage,
@@ -27,7 +30,12 @@ interface UserManageProps extends FormComponentProps {
     loading: loading.models.userManage,
   }),
 )
-class UserManage extends Component<UserManageProps, any> {
+class UserManage extends Component<UserManageProps, UserManageState> {
+  
+  state={
+    modelVisible:false
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -47,11 +55,33 @@ class UserManage extends Component<UserManageProps, any> {
     alert('reset');
   };
   handleAdd = () => {
-    alert('add');
+    this.setState({modelVisible:true})
   };
   handleSearch = () => {
     alert('search');
   };
+  handleEdit=(id:number)=>{
+    const {
+      dispatch,
+    } = this.props;
+    this.setState({modelVisible:true})
+    dispatch({
+      type: 'userManage/fetchUserInfo',
+      payload:{id}
+    });
+  }
+  handleSave=()=>{
+    alert('save')
+  }
+  handleClose=()=>{
+    const {
+      dispatch,
+    } = this.props;
+    this.setState({modelVisible:false})
+    dispatch({
+      type: 'userManage/setCurrentUser',
+    });
+  }
   handleChange = (pagination: PaginationProps) => {
     const {
       dispatch,
@@ -88,7 +118,7 @@ class UserManage extends Component<UserManageProps, any> {
       key: 'action',
       render: (text: string, record: User) => (
         <span>
-          <a href="javascript:;">编辑</a>
+          <a href="javascript:;" onClick={()=>{this.handleEdit(record.id)}}>编辑</a>
           <Divider type="vertical" />
           <a href="javascript:;">删除</a>
         </span>
@@ -102,6 +132,7 @@ class UserManage extends Component<UserManageProps, any> {
       loading,
       form: { getFieldDecorator },
     } = this.props;
+    const currentUser=userManage.currentUser
     return (
       <Spin spinning={loading}>
         <Card bordered={false}>
@@ -133,6 +164,29 @@ class UserManage extends Component<UserManageProps, any> {
             pagination={userManage.pagination}
             onChange={this.handleChange}
           />
+          <Modal
+            title={currentUser?'用户编辑':'用户新增'}
+            visible={this.state.modelVisible}
+            onOk={this.handleSave}
+            onCancel={this.handleClose}
+          >
+            <Spin spinning={loading}>
+              <Form labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
+                <Form.Item label="用户名">
+                  {getFieldDecorator('username', {
+                    initialValue:currentUser?currentUser.username:null,
+                    rules: [{ required: true, message: '请输入用户名!' }],
+                  })(<Input />)}
+                </Form.Item>
+                <Form.Item label="姓名">
+                  {getFieldDecorator('name', {
+                    initialValue:currentUser?currentUser.name:null,
+                    rules: [{ required: true, message: '请输入姓名!' }],
+                  })(<Input />)}
+                </Form.Item>
+              </Form>
+            </Spin>
+          </Modal>
         </Card>
       </Spin>
     );

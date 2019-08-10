@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { queryUserList } from './service';
+import { queryUserList,queryUser } from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 
 export interface User {
@@ -24,6 +24,7 @@ export interface ResponseType {
 export interface StateType {
   list: User[];
   pagination: PaginationProps;
+  currentUser?:User
 }
 
 export type Effect = (
@@ -36,9 +37,11 @@ export interface ModelType {
   state: StateType;
   effects: {
     fetch: Effect;
+    fetchUserInfo:Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
+    setCurrentUser:Reducer<StateType>;
   };
 }
 
@@ -58,6 +61,13 @@ const Model: ModelType = {
         payload: response,
       });
     },
+    *fetchUserInfo({ payload }, { call, put }){
+      const response: User = yield call(queryUser, payload);
+      yield put({
+        type: 'setCurrentUser',
+        payload: response,
+      });
+    }
   },
 
   reducers: {
@@ -70,6 +80,13 @@ const Model: ModelType = {
       return {
         pagination,
         list: pl.rows,
+      };
+    },
+    setCurrentUser(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        currentUser:payload
       };
     },
   },
