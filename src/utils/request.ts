@@ -47,4 +47,14 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
 });
 
+// 中间件，对请求前、响应后做处理
+request.use(async (ctx, next) => {
+  await next();
+  const { res:{code,message} } = ctx;
+  if(code===500||code===404){
+    notification.error({
+      message
+    });
+  }
+})
 export default request;

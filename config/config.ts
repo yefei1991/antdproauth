@@ -126,7 +126,7 @@ export default {
           routes: [
             {
               name: 'user',
-              path: '/system/user',
+              path: '/system/usersPage',
               component: './system/user',
             },
             {
