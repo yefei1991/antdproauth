@@ -248,7 +248,7 @@ export default {
   chainWebpack: webpackPlugin,
   proxy: {
     '/server/': {
-      target: 'http://localhost:8080/',
+      target: 'http://localhost:9999/',
       changeOrigin: true,
       pathRewrite: { '^/server': '' },
     },

@@ -4,6 +4,7 @@ import { EffectsCommandMap } from 'dva';
 import { fakeAccountLogin } from '../pages/user/login/service';
 import { routerRedux } from 'dva/router';
 import {setAuthority,removeAuthority} from '../utils/authority'
+import {ResponseType} from '../services/common'
 
 export interface Menu {
   path: string;
@@ -23,10 +24,15 @@ export interface AuthorityType extends StateType {
   currentMenu: Menu[];
 }
 
+interface LoginResponse extends ResponseType{
+  data?:{currentUser:User,currentMenu:Menu[]}
+}
+
 export interface StateType {
   status?: 'ok' | 'error';
   currentUser?: User;
   currentMenu?: Menu[];
+  errorMessage?:string
 }
 
 type Effect = (
@@ -59,9 +65,10 @@ const Model: ModelType = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response: AuthorityType = yield call(fakeAccountLogin, payload);
-      if (response.status === 'ok') {
-        setAuthority(response)
+      const response: LoginResponse = yield call(fakeAccountLogin, payload);
+      if (response.code === 200) {
+        const authority:AuthorityType={status:'ok',currentUser:response.data!.currentUser,currentMenu:response.data!.currentMenu}
+        setAuthority(authority)
         let {redirect}=getPageQuery()
         if(redirect){
           const redirectUrlParams = new URL(redirect);
@@ -70,6 +77,11 @@ const Model: ModelType = {
         }else{
           yield put(routerRedux.push('/'));
         }
+      }else{
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {status:'error',errorMessage:response.message},
+        });
       }
     },
     *logout(_, { put }) {

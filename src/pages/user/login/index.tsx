@@ -56,7 +56,7 @@ class Login extends Component<LoginProps, any> {
     } = this.props;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
-        {status === 'error' && !submitting && this.renderMessage('用户名或密码错误')}
+        {status === 'error' && !submitting && this.renderMessage(this.props.userLogin.errorMessage!)}
         <Form.Item>
           {getFieldDecorator('username', {
             rules: [{ required: true, message: '请输入用户名!' }],
