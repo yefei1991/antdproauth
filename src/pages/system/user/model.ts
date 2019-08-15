@@ -2,6 +2,7 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { queryUserList,queryUser } from './service';
 import { PaginationProps } from 'antd/lib/pagination';
+import {ResponseType} from '@/services/common'
 
 export interface User {
   id: number;
@@ -15,11 +16,17 @@ export interface ParamType {
   pageSize?: number;
 }
 
-export interface ResponseType {
-  total: number;
-  rows: any[];
-  current: number;
-  pageSize: number;
+export interface UserListResponse extends ResponseType {
+  data:{
+    list:User[]
+    pageNum:number
+    pageSize:number
+    total:number
+  }
+  // total: number;
+  // rows: any[];
+  // current: number;
+  // pageSize: number;
 }
 export interface StateType {
   list: User[];
@@ -55,7 +62,7 @@ const Model: ModelType = {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response: ResponseType = yield call(queryUserList, payload);
+      const response: UserListResponse = yield call(queryUserList, payload);
       yield put({
         type: 'queryList',
         payload: response,
@@ -72,14 +79,14 @@ const Model: ModelType = {
 
   reducers: {
     queryList(state, { payload }) {
-      const pl = <ResponseType>payload;
+      const pl = <UserListResponse>payload;
       const { pagination } = state as StateType;
-      pagination.total = pl.total;
-      pagination.current = pl.current;
-      pagination.pageSize = pl.pageSize;
+      pagination.total = pl.data.total;
+      pagination.current = pl.data.pageNum;
+      pagination.pageSize = pl.data.pageSize;
       return {
         pagination,
-        list: pl.rows,
+        list: pl.data.list,
       };
     },
     setCurrentUser(state, { payload }) {

@@ -42,6 +42,7 @@ class UserManage extends Component<UserManageProps, UserManageState> {
       type: 'userManage/fetch',
       payload: {
         current: 1,
+        pageSize: 10,
       },
     });
   }

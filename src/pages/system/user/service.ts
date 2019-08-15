@@ -1,8 +1,8 @@
-import request from 'umi-request';
+import request from '@/utils/request';
 import { ParamType } from './model';
 
 export async function queryUserList(params: ParamType) {
-  return request('/api/user/list', {
+  return request('/server/user/list', {
     params,
   });
 }
