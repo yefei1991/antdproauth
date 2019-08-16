@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,Popconfirm } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
