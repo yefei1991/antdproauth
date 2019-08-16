@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,Popconfirm } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
 import { User, StateType, ParamType } from './model';
 import { connect } from 'dva';
-import { Dispatch } from 'redux';
+import {ConnectProps} from '@/models/connect'
+import {ResponseType} from '@/services/common'
 
-interface UserManageProps extends FormComponentProps {
+interface UserManageProps extends FormComponentProps,ConnectProps {
   userManage: StateType;
   loading: boolean;
-  dispatch: Dispatch<any>;
 }
 
 interface UserManageState{
@@ -36,30 +36,51 @@ class UserManage extends Component<UserManageProps, UserManageState> {
     modelVisible:false
   }
 
+  searchKeys:string[]=[]
+  formKeys:string[]=[]
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,form} = this.props;
+    let values=form.getFieldsValue()
+    Object.keys(values).forEach(e=>{
+      if(e.indexOf("s_")!=-1){
+        this.searchKeys.push(e)
+      }else{
+        this.formKeys.push(e)
+      }
+    })
     dispatch({
       type: 'userManage/fetch',
       payload: {
         current: 1,
         pageSize: 10,
-      },
+      }
     });
   }
 
-  handleSubmit = (e: React.FormEvent) => {
-    const { getFieldsValue } = this.props.form;
-    e.preventDefault();
-    console.info(getFieldsValue());
-  };
   handleReset = () => {
-    alert('reset');
+    const { dispatch,form,userManage:{pagination} } = this.props;
+    const payload={current: 1,pageSize: pagination.pageSize,}
+    form.resetFields(this.searchKeys)
+    dispatch({
+      type: 'userManage/fetch',
+      payload
+    });
   };
   handleAdd = () => {
     this.setState({modelVisible:true})
   };
   handleSearch = () => {
-    alert('search');
+    const { dispatch,form,userManage } = this.props;
+    let values=form.getFieldsValue(this.searchKeys)
+    let pagination=userManage.pagination
+    const payload={current: 1,pageSize: pagination.pageSize,}
+    for(let key in values){
+      payload[key.substring(2)]=values[key]
+    }
+    dispatch({
+      type: 'userManage/fetch',
+      payload
+    });
   };
   handleEdit=(id:number)=>{
     const {
@@ -72,7 +93,44 @@ class UserManage extends Component<UserManageProps, UserManageState> {
     });
   }
   handleSave=()=>{
-    alert('save')
+    const{form,dispatch,userManage:{currentUser}}=this.props
+    form.validateFields(this.formKeys,(err,values)=>{
+      if(!err){
+        if(currentUser){
+          values.id=currentUser.id
+        }
+        dispatch({
+          type: 'userManage/saveUser',
+          payload:values,
+        }).then((response:ResponseType)=>{
+          if(response.code===200){
+            this.setState({modelVisible:false})
+            this.handleSearch()
+          }else{
+            message.error(response.message)
+          }
+        })
+      }
+    })
+  }
+  handleDelete=(id:number)=>{
+    const {dispatch} = this.props
+    Modal.confirm({
+      title: '删除记录',
+      content: '确定删除该记录吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        dispatch({
+          type: 'userManage/deleteUser',
+          payload:{id}
+        }).then((response:ResponseType)=>{
+          if(response.code===200){
+            this.handleSearch()
+          }
+        })
+      },
+    });
   }
   handleClose=()=>{
     const {
@@ -121,7 +179,7 @@ class UserManage extends Component<UserManageProps, UserManageState> {
         <span>
           <a href="javascript:;" onClick={()=>{this.handleEdit(record.id)}}>编辑</a>
           <Divider type="vertical" />
-          <a href="javascript:;">删除</a>
+          <a href="javascript:;" onClick={()=>{this.handleDelete(record.id)}}>删除</a>
         </span>
       ),
     },
@@ -137,7 +195,7 @@ class UserManage extends Component<UserManageProps, UserManageState> {
     return (
       <Spin spinning={loading}>
         <Card bordered={false}>
-          <Form className={styles.tableListForm} layout="inline" onSubmit={this.handleSubmit}>
+          <Form className={styles.tableListForm} layout="inline">
             <Row gutter={24}>
               <Col span={6}>
                 <Form.Item label="名称">{getFieldDecorator('s_name')(<Input />)}</Form.Item>
@@ -170,6 +228,7 @@ class UserManage extends Component<UserManageProps, UserManageState> {
             visible={this.state.modelVisible}
             onOk={this.handleSave}
             onCancel={this.handleClose}
+            destroyOnClose
           >
             <Spin spinning={loading}>
               <Form labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>

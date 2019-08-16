@@ -51,7 +51,7 @@ const request = extend({
 request.use(async (ctx, next) => {
   await next();
   const { res:{code,message} } = ctx;
-  if(code===500||code===404){
+  if(code!==200){
     notification.error({
       message
     });

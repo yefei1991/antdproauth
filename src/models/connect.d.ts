@@ -52,5 +52,5 @@ export interface Route extends MenuDataItem {
  * @type T: Params matched in dynamic routing
  */
 export interface ConnectProps<T = {}> extends Partial<RouterTypes<Route, T>> {
-  dispatch?: Dispatch;
+  dispatch: Dispatch;
 }

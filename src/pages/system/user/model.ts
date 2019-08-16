@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { queryUserList,queryUser } from './service';
+import { queryUserList,queryUser,saveUser,deleteUser } from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 import {ResponseType} from '@/services/common'
 
@@ -8,7 +8,6 @@ export interface User {
   id: number;
   name: string;
   username: string;
-  role: string;
 }
 
 export interface ParamType {
@@ -23,10 +22,6 @@ export interface UserListResponse extends ResponseType {
     pageSize:number
     total:number
   }
-  // total: number;
-  // rows: any[];
-  // current: number;
-  // pageSize: number;
 }
 export interface StateType {
   list: User[];
@@ -45,6 +40,8 @@ export interface ModelType {
   effects: {
     fetch: Effect;
     fetchUserInfo:Effect;
+    saveUser:Effect;
+    deleteUser:Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
@@ -69,11 +66,20 @@ const Model: ModelType = {
       });
     },
     *fetchUserInfo({ payload }, { call, put }){
-      const response: User = yield call(queryUser, payload);
+      const response: ResponseType = yield call(queryUser, payload);
+      const data:User=response.data
       yield put({
         type: 'setCurrentUser',
-        payload: response,
+        payload: data,
       });
+    },
+    *saveUser({payload},{call,put}){
+      const response: ResponseType = yield call(saveUser, payload);
+      return response
+    },
+    *deleteUser({payload},{call}){
+      const response: ResponseType = yield call(deleteUser, payload);
+      return response
     }
   },
 
