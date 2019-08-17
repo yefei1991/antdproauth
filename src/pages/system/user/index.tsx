@@ -173,12 +173,19 @@ class UserManage extends Component<UserManageProps, UserManageState> {
     const{userManage:{userRoles,roleChecked},dispatch}=this.props
     if(userRoles){
       return (
-        <Checkbox.Group options={userRoles} value={roleChecked} onChange={(values)=>{
+        <Checkbox.Group style={{ width: '100%' }} value={roleChecked} onChange={(values)=>{
           dispatch({
             type:'userManage/setRoleChecked',
             payload:values
           })
         }}>
+          <Row>
+            {userRoles.map(e=>(
+              <Col span={6}>
+                <Checkbox value={e.value}>{e.label}</Checkbox>
+              </Col>
+            ))}
+          </Row>
         </Checkbox.Group>
         )
     }
