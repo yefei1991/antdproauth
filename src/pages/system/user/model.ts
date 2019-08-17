@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { queryUserList,queryUser,saveUser,deleteUser } from './service';
+import { queryUserList,queryUser,saveUser,deleteUser,userRoles,allocateRole } from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 import {ResponseType} from '@/services/common'
 
@@ -23,10 +23,22 @@ export interface UserListResponse extends ResponseType {
     total:number
   }
 }
+
+export interface UserRoleResponse extends ResponseType{
+  data:UserRoles[]
+}
+
+export interface UserRoles{
+  label:string
+  value:number
+  checked:boolean
+}
 export interface StateType {
   list: User[];
   pagination: PaginationProps;
   currentUser?:User
+  userRoles?:UserRoles[]
+  roleChecked?:number[]
 }
 
 export type Effect = (
@@ -42,10 +54,14 @@ export interface ModelType {
     fetchUserInfo:Effect;
     saveUser:Effect;
     deleteUser:Effect;
+    userRoles:Effect;
+    allocateRole:Effect;
   };
   reducers: {
     queryList: Reducer<StateType>;
     setCurrentUser:Reducer<StateType>;
+    setUserRoles:Reducer<StateType>;
+    setRoleChecked:Reducer<StateType>;
   };
 }
 
@@ -80,6 +96,26 @@ const Model: ModelType = {
     *deleteUser({payload},{call}){
       const response: ResponseType = yield call(deleteUser, payload);
       return response
+    },
+    *allocateRole({payload},{call}){
+      yield call(allocateRole, payload);
+    },
+    *userRoles({payload},{call,put}){
+      const response:UserRoleResponse=yield call(userRoles,payload);
+      let arr:number[]=[]
+      response.data.forEach(e=>{
+        if(e.checked){
+          arr.push(e.value)
+        }
+      })
+      yield put({
+        type: 'setUserRoles',
+        payload: response.data,
+      });
+      yield put({
+        type: 'setRoleChecked',
+        payload: arr,
+      });
     }
   },
 
@@ -100,6 +136,20 @@ const Model: ModelType = {
       return {
         ...s1,
         currentUser:payload
+      };
+    },
+    setUserRoles(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        userRoles:payload
+      };
+    },
+    setRoleChecked(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        roleChecked:payload
       };
     },
   },

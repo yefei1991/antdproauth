@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
@@ -15,6 +15,8 @@ interface UserManageProps extends FormComponentProps,ConnectProps {
 
 interface UserManageState{
   modelVisible:boolean
+  userRoleVisible:boolean
+  currentId?:number
 }
 @connect(
   ({
@@ -33,7 +35,9 @@ interface UserManageState{
 class UserManage extends Component<UserManageProps, UserManageState> {
   
   state={
-    modelVisible:false
+    modelVisible:false,
+    userRoleVisible:false,
+    currentId:undefined
   }
 
   searchKeys:string[]=[]
@@ -84,13 +88,23 @@ class UserManage extends Component<UserManageProps, UserManageState> {
   };
   handleEdit=(id:number)=>{
     const {
-      dispatch,
+      dispatch
     } = this.props;
     this.setState({modelVisible:true})
     dispatch({
       type: 'userManage/fetchUserInfo',
       payload:{id}
-    });
+    })
+  }
+  openUserRole=(id:number)=>{
+    const {
+      dispatch
+    } = this.props;
+    this.setState({userRoleVisible:true,currentId:id})
+    dispatch({
+      type: 'userManage/userRoles',
+      payload:{userId:id}
+    })
   }
   handleSave=()=>{
     const{form,dispatch,userManage:{currentUser}}=this.props
@@ -155,6 +169,41 @@ class UserManage extends Component<UserManageProps, UserManageState> {
       payload,
     });
   };
+  renderUserRoles=()=>{
+    const{userManage:{userRoles,roleChecked},dispatch}=this.props
+    if(userRoles){
+      return (
+        <Checkbox.Group options={userRoles} value={roleChecked} onChange={(values)=>{
+          dispatch({
+            type:'userManage/setRoleChecked',
+            payload:values
+          })
+        }}>
+        </Checkbox.Group>
+        )
+    }
+    return null
+  }
+  saveUserRole=()=>{
+    const{dispatch}=this.props
+    const{userManage:{roleChecked}}=this.props
+    dispatch({
+      type:'userManage/allocateRole',
+      payload:{userId:this.state.currentId,roleIdList:roleChecked!.join(',')}
+    }).then(()=>{
+      this.setState({userRoleVisible:false})
+      this.handleSearch()
+    })
+  }
+  closeUserRole=()=>{
+    const {
+      dispatch,
+    } = this.props;
+    this.setState({userRoleVisible:false})
+    dispatch({
+      type: 'userManage/setUserRoles',
+    });
+  }
 
   columns = [
     {
@@ -178,6 +227,8 @@ class UserManage extends Component<UserManageProps, UserManageState> {
       render: (text: string, record: User) => (
         <span>
           <a href="javascript:;" onClick={()=>{this.handleEdit(record.id)}}>编辑</a>
+          <Divider type="vertical" />
+          <a href="javascript:;" onClick={()=>{this.openUserRole(record.id)}}>分配角色</a>
           <Divider type="vertical" />
           <a href="javascript:;" onClick={()=>{this.handleDelete(record.id)}}>删除</a>
         </span>
@@ -245,6 +296,17 @@ class UserManage extends Component<UserManageProps, UserManageState> {
                   })(<Input />)}
                 </Form.Item>
               </Form>
+            </Spin>
+          </Modal>
+          <Modal
+            title='角色分配'
+            visible={this.state.userRoleVisible}
+            onOk={this.saveUserRole}
+            onCancel={this.closeUserRole}
+            destroyOnClose
+          >
+            <Spin spinning={loading}>
+              {this.renderUserRoles()}
             </Spin>
           </Modal>
         </Card>
