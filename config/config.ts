@@ -130,6 +130,11 @@ export default {
               component: './system/user',
             },
             {
+              name: 'role',
+              path: '/system/rolesPage',
+              component: './system/role',
+            },
+            {
               name: 'basic-list',
               path: '/list/basic-list',
               component: './list/basic-list',
