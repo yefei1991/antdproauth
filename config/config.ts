@@ -135,6 +135,11 @@ export default {
               component: './system/role',
             },
             {
+              name: 'resource',
+              path: '/system/resourcesPage',
+              component: './system/resource',
+            },
+            {
               name: 'basic-list',
               path: '/list/basic-list',
               component: './list/basic-list',
