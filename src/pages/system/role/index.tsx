@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,TreeSelect } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
@@ -15,6 +15,8 @@ interface Props extends FormComponentProps,ConnectProps {
 
 interface State{
   modelVisible:boolean
+  roleResourceVisible:boolean
+  currentRoleId:number
 }
 @connect(
   ({
@@ -34,6 +36,8 @@ class Manage extends Component<Props, State> {
   
   state={
     modelVisible:false,
+    roleResourceVisible:false,
+    currentRoleId:0
   }
 
   searchKeys:string[]=[]
@@ -156,6 +160,62 @@ class Manage extends Component<Props, State> {
     });
   };
 
+  openRoleResource=(id:number)=>{
+    const {
+      dispatch
+    } = this.props;
+    this.setState({roleResourceVisible:true,currentRoleId:id})
+    dispatch({
+      type: 'roleManage/roleResources',
+      payload:{roleId:id}
+    })
+  }
+
+  renderRoleResource=()=>{
+    const{roleManage:{roleResources,resourceChecked},dispatch}=this.props
+    if(roleResources){
+      console.info(resourceChecked)
+      const tProps = {
+        treeData:roleResources,
+        value: resourceChecked,
+        treeCheckable: true,
+        searchPlaceholder: '请选择资源',
+        treeDefaultExpandAll:true,
+        style: {
+          width: 300,
+        },
+      };
+      return (
+        <TreeSelect {...tProps} onChange={(values)=>{
+          dispatch({
+            type:'roleManage/setResourceChecked',
+            payload:values
+          })
+        }}/>
+        )
+    }
+    return null
+  }
+  saveRoleResource=()=>{
+    const{dispatch}=this.props
+    const{roleManage:{resourceChecked}}=this.props
+    dispatch({
+      type:'roleManage/allocateResource',
+      payload:{userId:this.state.currentRoleId,resourceIdList:resourceChecked!.join(',')}
+    }).then(()=>{
+      this.setState({roleResourceVisible:false})
+      this.handleSearch()
+    })
+  }
+  closeRoleResource=()=>{
+    const {
+      dispatch,
+    } = this.props;
+    this.setState({roleResourceVisible:false})
+    dispatch({
+      type: 'roleManage/setRoleResources',
+    });
+  }
   columns = [
     {
       title: '角色code',
@@ -173,6 +233,8 @@ class Manage extends Component<Props, State> {
       render: (text: string, record: Role) => (
         <span>
           <a href="javascript:;" onClick={()=>{this.handleEdit(record.id)}}>编辑</a>
+          <Divider type="vertical" />
+          <a href="javascript:;" onClick={()=>{this.openRoleResource(record.id)}}>分配资源</a>
           <Divider type="vertical" />
           <a href="javascript:;" onClick={()=>{this.handleDelete(record.id)}}>删除</a>
         </span>
@@ -240,6 +302,17 @@ class Manage extends Component<Props, State> {
                   })(<Input />)}
                 </Form.Item>
               </Form>
+            </Spin>
+          </Modal>
+          <Modal
+            title='资源分配'
+            visible={this.state.roleResourceVisible}
+            onOk={this.saveRoleResource}
+            onCancel={this.closeRoleResource}
+            destroyOnClose
+          >
+            <Spin spinning={loading}>
+              {this.renderRoleResource()}
             </Spin>
           </Modal>
         </Card>

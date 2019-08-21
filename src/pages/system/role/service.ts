@@ -29,3 +29,18 @@ export async function saveModel(param: Model) {
     }
   );
 }
+
+export async function roleResources(params: { roleId: number }) {
+  return request(`/server/${model}/roleResources`, {
+    params,
+  });
+}
+
+export async function allocateResource(param:{roleId:number,resourceIdList:string}){
+  return request(`/server/${model}/allocateResource`, {
+    requestType: 'form',
+    method: 'POST',
+    data: param,
+    }
+  );
+}

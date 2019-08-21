@@ -1,8 +1,9 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import {deleteModel,queryList,queryModel,saveModel} from './service';
+import {deleteModel,queryList,queryModel,saveModel,allocateResource,roleResources} from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 import {ResponseType} from '@/services/common'
+import { TreeNodeSimpleMode } from 'antd/lib/tree-select/interface';
 
 export const model='role'
 
@@ -27,10 +28,25 @@ export interface ModelListResponse extends ResponseType {
   }
 }
 
+export interface RoleResourceResponse extends ResponseType{
+  data:{
+    checked:number[],
+    treeData:RoleResources[]
+  }
+}
+
+export interface RoleResources extends TreeNodeSimpleMode{
+  title:string
+  value:number
+  children:RoleResources[]
+}
+
 export interface StateType {
   list: Model[];
   pagination: PaginationProps;
   currentModel?:Model
+  roleResources?:RoleResources[]
+  resourceChecked?:number[]
 }
 
 export type Effect = (
@@ -46,10 +62,14 @@ export interface ModelType {
     fetchInfo:Effect;
     saveModel:Effect;
     deleteModel:Effect;
+    roleResources:Effect;
+    allocateResource:Effect;
   };
   reducers: {
     setList: Reducer<StateType>;
     setEditModel:Reducer<StateType>;
+    setRoleResources:Reducer<StateType>;
+    setResourceChecked:Reducer<StateType>;
   };
 }
 
@@ -85,6 +105,20 @@ const dvamodel: ModelType = {
       const response: ResponseType = yield call(deleteModel, payload);
       return response
     },
+    *allocateResource({payload},{call}){
+      yield call(allocateResource, payload);
+    },
+    *roleResources({payload},{call,put}){
+      const response:RoleResourceResponse=yield call(roleResources,payload);
+      yield put({
+        type: 'setRoleResources',
+        payload: response.data.treeData,
+      });
+      yield put({
+        type: 'setResourceChecked',
+        payload: response.data.checked,
+      });
+    }
   },
 
   reducers: {
@@ -104,6 +138,20 @@ const dvamodel: ModelType = {
       return {
         ...s1,
         currentModel:payload
+      };
+    },
+    setRoleResources(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        roleResources:payload
+      };
+    },
+    setResourceChecked(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        resourceChecked:payload
       };
     },
   },
