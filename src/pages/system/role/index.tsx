@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,TreeSelect } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,Tree } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
@@ -174,22 +174,23 @@ class Manage extends Component<Props, State> {
   renderRoleResource=()=>{
     const{roleManage:{roleResources,resourceChecked},dispatch}=this.props
     if(roleResources){
-      console.info(resourceChecked)
       const tProps = {
+        checkable:true,
+        defaultExpandAll:true,
         treeData:roleResources,
-        value: resourceChecked,
-        treeCheckable: true,
-        searchPlaceholder: '请选择资源',
-        treeDefaultExpandAll:true,
+        checkedKeys:resourceChecked,
         style: {
           width: 300,
         },
       };
       return (
-        <TreeSelect {...tProps} onChange={(values)=>{
+        <Tree {...tProps} onCheck={(values,info)=>{
+          const valueArr=values as string[]
+          // @ts-ignore
+          const submited=[...valueArr,...info.halfCheckedKeys]
           dispatch({
             type:'roleManage/setResourceChecked',
-            payload:values
+            payload:{checked:values,submited}
           })
         }}/>
         )
@@ -198,10 +199,10 @@ class Manage extends Component<Props, State> {
   }
   saveRoleResource=()=>{
     const{dispatch}=this.props
-    const{roleManage:{resourceChecked}}=this.props
+    const{roleManage:{resourceSubmited}}=this.props
     dispatch({
       type:'roleManage/allocateResource',
-      payload:{userId:this.state.currentRoleId,resourceIdList:resourceChecked!.join(',')}
+      payload:{roleId:this.state.currentRoleId,resourceIdList:resourceSubmited!.join(',')}
     }).then(()=>{
       this.setState({roleResourceVisible:false})
       this.handleSearch()

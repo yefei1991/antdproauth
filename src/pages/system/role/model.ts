@@ -3,7 +3,7 @@ import { EffectsCommandMap } from 'dva';
 import {deleteModel,queryList,queryModel,saveModel,allocateResource,roleResources} from './service';
 import { PaginationProps } from 'antd/lib/pagination';
 import {ResponseType} from '@/services/common'
-import { TreeNodeSimpleMode } from 'antd/lib/tree-select/interface';
+import { TreeNodeNormal } from 'antd/lib/tree-select/interface';
 
 export const model='role'
 
@@ -32,10 +32,11 @@ export interface RoleResourceResponse extends ResponseType{
   data:{
     checked:number[],
     treeData:RoleResources[]
+    submited:number[],
   }
 }
 
-export interface RoleResources extends TreeNodeSimpleMode{
+export interface RoleResources extends TreeNodeNormal{
   title:string
   value:number
   children:RoleResources[]
@@ -46,7 +47,8 @@ export interface StateType {
   pagination: PaginationProps;
   currentModel?:Model
   roleResources?:RoleResources[]
-  resourceChecked?:number[]
+  resourceChecked?:string[]
+  resourceSubmited?:string[]
 }
 
 export type Effect = (
@@ -116,7 +118,7 @@ const dvamodel: ModelType = {
       });
       yield put({
         type: 'setResourceChecked',
-        payload: response.data.checked,
+        payload: {checked:response.data.checked,submited:response.data.submited},
       });
     }
   },
@@ -151,7 +153,8 @@ const dvamodel: ModelType = {
       const s1=<StateType> state
       return {
         ...s1,
-        resourceChecked:payload
+        resourceChecked:payload.checked,
+        resourceSubmited:payload.submited
       };
     },
   },
