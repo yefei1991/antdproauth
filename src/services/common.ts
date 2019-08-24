@@ -3,3 +3,8 @@ export interface ResponseType{
     message?:string
     data?:any
 }
+
+export interface Dictionary{
+    label:string
+    value:number
+}

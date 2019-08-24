@@ -1,8 +1,8 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import {deleteModel,queryList,queryModel,saveModel} from './service';
+import {deleteModel,queryList,queryModel,saveModel,queryDictionary} from './service';
 import { PaginationProps } from 'antd/lib/pagination';
-import {ResponseType} from '@/services/common'
+import {ResponseType,Dictionary} from '@/services/common'
 
 export const model='resource'
 
@@ -15,6 +15,10 @@ export interface Model {
   parentid:string
 }
 
+export interface ModelDictionary{ 
+  types:Dictionary[],
+  dictionarys:Dictionary[],
+}
 export interface ParamType {
   current?: number;
   pageSize?: number;
@@ -33,6 +37,7 @@ export interface StateType {
   list: Model[];
   pagination: PaginationProps;
   currentModel?:Model
+  dictionarys?:ModelDictionary
 }
 
 export type Effect = (
@@ -48,10 +53,12 @@ export interface ModelType {
     fetchInfo:Effect;
     saveModel:Effect;
     deleteModel:Effect;
+    fetchDictionary:Effect;
   };
   reducers: {
     setList: Reducer<StateType>;
     setEditModel:Reducer<StateType>;
+    setDictionary:Reducer<StateType>;
   };
 }
 
@@ -87,6 +94,14 @@ const dvamodel: ModelType = {
       const response: ResponseType = yield call(deleteModel, payload);
       return response
     },
+    *fetchDictionary(_,{call,put}){
+      const response: ResponseType = yield call(queryDictionary);
+      const dictionarys=response.data as ModelDictionary
+      yield put({
+        type: 'setDictionary',
+        payload: dictionarys,
+      });
+    }
   },
 
   reducers: {
@@ -108,6 +123,13 @@ const dvamodel: ModelType = {
         currentModel:payload
       };
     },
+    setDictionary(state, { payload }) {
+      const s1=<StateType> state
+      return {
+        ...s1,
+        dictionarys:payload
+      };
+    }
   },
 };
 

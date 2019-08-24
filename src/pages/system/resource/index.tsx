@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin,Modal, message,Select } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
 import { StateType, ParamType,Model as resource } from './model';
 import { connect } from 'dva';
 import {ConnectProps} from '@/models/connect'
-import {ResponseType} from '@/services/common'
+import {ResponseType,Dictionary} from '@/services/common'
 
 interface Props extends FormComponentProps,ConnectProps {
   resourceManage: StateType;
   loading: boolean;
 }
+const {Option}=Select
 
 interface State{
   modelVisible:boolean
@@ -67,7 +68,11 @@ class Manage extends Component<Props, State> {
     });
   };
   handleAdd = () => {
+    const { dispatch } = this.props;
     this.setState({modelVisible:true})
+    dispatch({
+      type: 'resourceManage/fetchDictionary',
+    })
   };
   handleSearch = () => {
     const { dispatch,form,resourceManage } = this.props;
@@ -87,6 +92,9 @@ class Manage extends Component<Props, State> {
       dispatch
     } = this.props;
     this.setState({modelVisible:true})
+    dispatch({
+      type: 'resourceManage/fetchDictionary',
+    })
     dispatch({
       type: 'resourceManage/fetchInfo',
       payload:{id}
@@ -197,6 +205,13 @@ class Manage extends Component<Props, State> {
       form: { getFieldDecorator },
     } = this.props;
     const currentModel=resourceManage.currentModel
+    const dictionarys=resourceManage.dictionarys
+    let types:Dictionary[]=[]
+    let directorys:Dictionary[]=[]
+    if(dictionarys){
+      types=dictionarys.types
+      directorys=dictionarys.dictionarys
+    }
     return (
       <Spin spinning={loading}>
         <Card bordered={false}>
@@ -241,7 +256,10 @@ class Manage extends Component<Props, State> {
                   {getFieldDecorator('parentid', {
                     initialValue:currentModel?currentModel.parentid:null,
                     rules: [{ required: true, message: '请输入父节点!' }],
-                  })(<Input />)}
+                  })(
+                  <Select placeholder="请输入父节点">
+                    {directorys.map(v=>(<Option value={v.value}>{v.label}</Option>))}
+                  </Select>)}
                 </Form.Item>
                 <Form.Item label="名称">
                   {getFieldDecorator('name', {
@@ -259,7 +277,9 @@ class Manage extends Component<Props, State> {
                   {getFieldDecorator('type', {
                     initialValue:currentModel?currentModel.type:null,
                     rules: [{ required: true, message: '请输入类型!' }],
-                  })(<Input />)}
+                  })(<Select placeholder="请输入类型">
+                  {types.map(v=>(<Option value={v.value}>{v.label}</Option>))}
+                </Select>)}
                 </Form.Item>
                 <Form.Item label="排序">
                   {getFieldDecorator('sort', {

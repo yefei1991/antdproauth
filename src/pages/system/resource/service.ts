@@ -29,3 +29,7 @@ export async function saveModel(param: Model) {
     }
   );
 }
+
+export async function queryDictionary() {
+  return request(`/server/${model}/dictionary`);
+}
