@@ -152,6 +152,18 @@ export default {
           ],
         },
         {
+          path: '/business',
+          icon: 'table',
+          name: 'system',
+          routes: [
+            {
+              name: 'novel',
+              path: '/business/novel',
+              component: './business/novel',
+            },
+          ],
+        },
+        {
           path: '/list',
           icon: 'table',
           name: 'list',
