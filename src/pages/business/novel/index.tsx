@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Card, Form, Button, Input, Row, Col, Table, Divider, Spin } from 'antd';
+import { Card, Form, Button, Input, Row, Col, Table, Spin } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { PaginationProps } from 'antd/lib/pagination';
 import styles from './index.less';
 import { StateType, ParamType,Model as resource } from './model';
 import { connect } from 'dva';
 import {ConnectProps} from '@/models/connect'
+import Link from 'umi/link';
 
 interface Props extends FormComponentProps,ConnectProps {
   novel: StateType;
@@ -112,11 +113,14 @@ class Manage extends Component<Props, State> {
     {
       title: '操作',
       key: 'action',
-      render: (text: string, record: resource) => (
-        <span>
-          <Divider type="vertical" />
-        </span>
-      ),
+      render: (text: string, record: resource) => {
+        const url=`/chapter?novelId=${record.id}`
+        return (
+          <span>
+            <Link to={url} target="_blank">开始阅读</Link>
+          </span>
+        )
+      },
     },
   ];
 

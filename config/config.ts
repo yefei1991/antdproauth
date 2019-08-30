@@ -108,6 +108,25 @@ export default {
       ],
     },
     {
+      path: '/chapter',
+      component: '../layouts/BlankLayout',
+      routes: [
+        {
+          name: 'chapter',
+          path: '/chapter',
+          component: './chapter/chapter',
+        },
+        {
+          name: 'detail',
+          path: '/chapter/detail',
+          component: './Welcome',
+        },
+        {
+          component: '404',
+        },
+      ],
+    },
+    {
       path: '/',
       component: '../layouts/BasicLayout',
       Routes: ['src/pages/Authorized'],
