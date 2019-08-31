@@ -1,3 +1,12 @@
+# 基于antdesignpro v4的权限管理系统
+
+现包含用户管理,权限管理,资源管理,角色管理等功能,
+
+除此之外,添加了一个小说列表的功能
+
+此项目仅包含前端,后台项目为springboot项目(https://github.com/yefei1991/spring-boot-api-project-seed)
+
+
 # Ant Design Pro
 
 This project is initialized with [Ant Design Pro](https://pro.ant.design). Follow is the quick guide for how to use.
