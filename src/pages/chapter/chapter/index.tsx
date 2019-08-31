@@ -31,7 +31,6 @@ class Manage extends Component<Props, any> {
   componentDidMount() {
     const { dispatch } = this.props;
     const query=this.getPageQuery()
-    console.info(1)
     dispatch({
       type: 'chapter/fetchList',
       payload: query
@@ -57,11 +56,14 @@ class Manage extends Component<Props, any> {
         </div>
         <Card bordered={false} style={{ marginLeft: "50px" }}>
           <Row>
-            {chapter.list.map(v => (
+            {chapter.list.map(v => {
+              const url=`/chapter/detail?chapterId=${v.id}`
+              return(
               <Col key={v.id} span={6}>
-                <Link to='/chapter/detail' target="_blank">{v.title}</Link>
-              </Col>
-            ))}
+                <Link to={url} target="_blank">{v.title}</Link>
+              </Col>)
+            }
+            )}
           </Row>
         </Card>
       </Spin>

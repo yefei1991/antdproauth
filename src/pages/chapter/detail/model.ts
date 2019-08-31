@@ -1,28 +1,25 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import {queryList} from './service';
+import {queryDetail} from './service';
 import {ResponseType} from '@/services/common'
 import { routerRedux } from 'dva/router';
 
-export const model='chapter'
+export const model='detail'
 
 export interface Model {
-  id: number
+  novelId: number
+  content: string
   title: string
+  next?: number
+  prev?: number
 }
 
 export interface ModelListResponse extends ResponseType {
-  data:{
-    author:string,
-    novel:string,
-    chapters:Model[],
-  }
+  data:Model
 }
 
 export interface StateType {
-  list: Model[]
-  author?:string
-  novel?:string
+  detail?:Model
 }
 
 export type Effect = (
@@ -34,10 +31,10 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
-    fetchList: Effect;
+    fetchDetail: Effect;
   };
   reducers: {
-    setList: Reducer<StateType>;
+    setDetail: Reducer<StateType>;
   };
 }
 
@@ -45,15 +42,15 @@ const dvamodel: ModelType = {
   namespace: `${model}`,
 
   state: {
-    list: [],
   },
 
   effects: {
-    *fetchList({ payload }, { call, put }) {
-      if(payload.novelId){
-        const response: ModelListResponse = yield call(queryList, payload);
+    *fetchDetail({ payload }, { call, put }) {
+      if(payload.chapterId){
+        const response: ModelListResponse = yield call(queryDetail, payload);
+        console.info(response)
         yield put({
-          type: 'setList',
+          type: 'setDetail',
           payload: response,
         });
       }else{
@@ -63,12 +60,10 @@ const dvamodel: ModelType = {
   },
 
   reducers: {
-    setList(state, { payload }) {
+    setDetail(state, { payload }) {
       const pl = <ModelListResponse>payload;
       return {
-        list: pl.data.chapters,
-        author:pl.data.author,
-        novel:pl.data.novel,
+        detail:pl.data
       };
     },
   },

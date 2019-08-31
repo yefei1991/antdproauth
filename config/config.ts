@@ -108,6 +108,17 @@ export default {
       ],
     },
     {
+      path: '/novel',
+      component: '../layouts/BlankLayout',
+      routes: [
+        {
+          name: 'novel',
+          path: '/novel',
+          component: './business/novel',
+        },
+      ],
+    },
+    {
       path: '/chapter',
       component: '../layouts/BlankLayout',
       routes: [
@@ -119,7 +130,7 @@ export default {
         {
           name: 'detail',
           path: '/chapter/detail',
-          component: './Welcome',
+          component: './chapter/detail',
         },
         {
           component: '404',
