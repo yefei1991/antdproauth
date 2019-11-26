@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import router from 'umi/router';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -55,6 +56,10 @@ request.use(async (ctx, next) => {
     notification.error({
       message
     });
+  }
+  if(code===401){
+    router.push('/user/login')
+    return
   }
 })
 export default request;

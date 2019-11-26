@@ -7,3 +7,10 @@ export async function fakeAccountLogin(params:{username:string,password:string})
         data:params,
     })
 }
+
+export async function logout(){
+    return request('/server/user/logout',{
+        requestType:'form',
+        method:'POST',
+    })
+}

@@ -1,7 +1,7 @@
 import { AnyAction, Reducer } from 'redux';
 import { parse, stringify } from 'qs';
 import { EffectsCommandMap } from 'dva';
-import { fakeAccountLogin } from '../pages/user/login/service';
+import { fakeAccountLogin,logout } from '../pages/user/login/service';
 import { routerRedux } from 'dva/router';
 import {setAuthority,removeAuthority} from '../utils/authority'
 import {ResponseType} from '../services/common'
@@ -84,8 +84,9 @@ const Model: ModelType = {
         });
       }
     },
-    *logout(_, { put }) {
+    *logout(_, { put,call }) {
       removeAuthority()
+      yield call(logout)
       yield put({
         type: 'changeLoginStatus',
         payload: {},

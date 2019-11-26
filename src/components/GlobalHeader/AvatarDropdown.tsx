@@ -43,11 +43,11 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     }
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
-        <Menu.Item key="center">
+        {/* <Menu.Item key="center">
           <Icon type="user" />
           个人中心
         </Menu.Item>
-        <Menu.Divider />
+        <Menu.Divider /> */}
         <Menu.Item key="logout">
           <Icon type="logout" />
           退出登录
