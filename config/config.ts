@@ -170,6 +170,11 @@ export default {
               component: './system/resource',
             },
             {
+              name: 'dictionary',
+              path: '/system/dictionaryPage',
+              component: './system/dictionary',
+            },
+            {
               name: 'basic-list',
               path: '/list/basic-list',
               component: './list/basic-list',
